@@ -1,13 +1,13 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: fint-core-consumer-administrasjon-personal
+  name: fint-core-consumer-administrasjon-kodeverk
 spec:
   entryPoints:
     - web
   routes:
-    - match: "Host(`beta.felleskomponent.no`) && (PathPrefix( `/administrasjon/personal`) && Headers(`x-org-id`, `evry.com`))"
+    - match: "Host(`beta.felleskomponent.no`) && (PathPrefix( `/administrasjon/kodeverk`) && Headers(`x-org-id`, `evry.com`))"
       kind: Rule
       services:
-        - name: fint-core-consumer-administrasjon-personal
+        - name: fint-core-consumer-administrasjon-kodeverk
           port: 8080

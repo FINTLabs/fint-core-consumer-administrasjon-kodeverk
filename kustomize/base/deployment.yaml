@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fint-core-consumer-administrasjon-personal
+  name: fint-core-consumer-administrasjon-kodeverk
 spec:
   replicas: 1
   strategy:
@@ -11,16 +11,16 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
-        prometheus.io/path: "administrasjon/personal/actuator/prometheus"
+        prometheus.io/path: "administrasjon/kodeverk/actuator/prometheus"
     spec:
       restartPolicy: Always
       volumes:
         - name: credentials
           secret:
-            secretName: fint-core-consumer-administrasjon-personal-kafka-certificates
+            secretName: fint-core-consumer-administrasjon-kodeverk-kafka-certificates
       containers:
-        - image: ghcr.io/fintlabs/fint-core-consumer-administrasjon-personal:sha-0000000
-          name: fint-core-consumer-administrasjon-personal
+        - image: ghcr.io/fintlabs/fint-core-consumer-administrasjon-kodeverk:sha-0000000
+          name: fint-core-consumer-administrasjon-kodeverk
           volumeMounts:
             - name: credentials
               mountPath: /credentials
@@ -35,6 +35,6 @@ spec:
             - containerPort: 8080
           envFrom:
             - secretRef:
-                name: fint-core-consumer-administrasjon-personal-kafka
+                name: fint-core-consumer-administrasjon-kodeverk-kafka
             - configMapRef:
-                name: fint-core-consumer-administrasjon-personal
+                name: fint-core-consumer-administrasjon-kodeverk

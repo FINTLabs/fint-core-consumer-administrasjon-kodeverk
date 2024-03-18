@@ -1,7 +1,7 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: fint-core-consumer-administrasjon-personal
+  name: fint-core-consumer-administrasjon-kodeverk
 spec:
   entryPoints:
     - web
@@ -9,5 +9,5 @@ spec:
     - match: Host(`hostname`) && PathPrefix(`path`)
       kind: Rule
       services:
-        - name: fint-core-consumer-administrasjon-personal
+        - name: fint-core-consumer-administrasjon-kodeverk
           port: 8080
