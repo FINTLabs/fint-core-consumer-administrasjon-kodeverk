@@ -24,17 +24,15 @@ public class ArbeidsforholdstypeService extends CacheService<Arbeidsforholdstype
 
     private final ArbeidsforholdstypeLinker linker;
 
-    private final ArbeidsforholdstypeResponseKafkaConsumer arbeidsforholdstypeResponseKafkaConsumer;
 
     public ArbeidsforholdstypeService(
             ArbeidsforholdstypeConfig consumerConfig,
             CacheManager cacheManager,
             ArbeidsforholdstypeEntityKafkaConsumer entityKafkaConsumer,
-            ArbeidsforholdstypeLinker linker, ArbeidsforholdstypeResponseKafkaConsumer arbeidsforholdstypeResponseKafkaConsumer) {
+            ArbeidsforholdstypeLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.arbeidsforholdstypeResponseKafkaConsumer = arbeidsforholdstypeResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class ArbeidsforholdstypeService extends CacheService<Arbeidsforholdstype
 
     private void addResourceToCache(ConsumerRecord<String, ArbeidsforholdstypeResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        ArbeidsforholdstypeResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            ArbeidsforholdstypeResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                arbeidsforholdstypeResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

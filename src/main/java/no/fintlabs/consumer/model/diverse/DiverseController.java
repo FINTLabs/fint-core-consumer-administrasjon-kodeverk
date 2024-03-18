@@ -6,7 +6,7 @@ import no.fint.model.resource.administrasjon.kodeverk.DiverseResource;
 import no.fint.relations.FintRelationsMediaType;
 import no.fintlabs.consumer.config.RestEndpoints;
 import no.fintlabs.core.consumer.shared.resource.CacheService;
-import no.fintlabs.core.consumer.shared.resource.WriteableConsumerRestController;
+import no.fintlabs.core.consumer.shared.resource.ConsumerRestController;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping(name = "Diverse", value = RestEndpoints.DIVERSE, produces = {FintRelationsMediaType.APPLICATION_HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
-public class DiverseController extends WriteableConsumerRestController<DiverseResource> {
+public class DiverseController extends ConsumerRestController<DiverseResource> {
 
     public DiverseController(
             CacheService<DiverseResource> cacheService,
             DiverseLinker fintLinker,
-            DiverseConfig diverseConfig,
-            DiverseEventKafkaProducer diverseEventKafkaProducer,
-            DiverseResponseKafkaConsumer diverseResponseKafkaConsumer,
-            FintFilterService odataFilterService,
-            DiverseRequestKafkaConsumer diverseRequestKafkaConsumer) {
-        super(cacheService, fintLinker, diverseConfig, diverseEventKafkaProducer, diverseResponseKafkaConsumer, odataFilterService, diverseRequestKafkaConsumer);
+            FintFilterService odataFilterService) {
+        super(cacheService, fintLinker, odataFilterService);
     }
 }

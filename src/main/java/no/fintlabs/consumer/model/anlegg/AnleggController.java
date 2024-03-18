@@ -6,7 +6,7 @@ import no.fint.model.resource.administrasjon.kodeverk.AnleggResource;
 import no.fint.relations.FintRelationsMediaType;
 import no.fintlabs.consumer.config.RestEndpoints;
 import no.fintlabs.core.consumer.shared.resource.CacheService;
-import no.fintlabs.core.consumer.shared.resource.WriteableConsumerRestController;
+import no.fintlabs.core.consumer.shared.resource.ConsumerRestController;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping(name = "Anlegg", value = RestEndpoints.ANLEGG, produces = {FintRelationsMediaType.APPLICATION_HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
-public class AnleggController extends WriteableConsumerRestController<AnleggResource> {
+public class AnleggController extends ConsumerRestController<AnleggResource> {
 
     public AnleggController(
             CacheService<AnleggResource> cacheService,
             AnleggLinker fintLinker,
-            AnleggConfig anleggConfig,
-            AnleggEventKafkaProducer anleggEventKafkaProducer,
-            AnleggResponseKafkaConsumer anleggResponseKafkaConsumer,
-            FintFilterService odataFilterService,
-            AnleggRequestKafkaConsumer anleggRequestKafkaConsumer) {
-        super(cacheService, fintLinker, anleggConfig, anleggEventKafkaProducer, anleggResponseKafkaConsumer, odataFilterService, anleggRequestKafkaConsumer);
+            FintFilterService odataFilterService) {
+        super(cacheService, fintLinker, odataFilterService);
     }
 }

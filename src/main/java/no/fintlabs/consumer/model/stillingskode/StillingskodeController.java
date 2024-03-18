@@ -6,7 +6,7 @@ import no.fint.model.resource.administrasjon.kodeverk.StillingskodeResource;
 import no.fint.relations.FintRelationsMediaType;
 import no.fintlabs.consumer.config.RestEndpoints;
 import no.fintlabs.core.consumer.shared.resource.CacheService;
-import no.fintlabs.core.consumer.shared.resource.WriteableConsumerRestController;
+import no.fintlabs.core.consumer.shared.resource.ConsumerRestController;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping(name = "Stillingskode", value = RestEndpoints.STILLINGSKODE, produces = {FintRelationsMediaType.APPLICATION_HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
-public class StillingskodeController extends WriteableConsumerRestController<StillingskodeResource> {
+public class StillingskodeController extends ConsumerRestController<StillingskodeResource> {
 
     public StillingskodeController(
             CacheService<StillingskodeResource> cacheService,
             StillingskodeLinker fintLinker,
-            StillingskodeConfig stillingskodeConfig,
-            StillingskodeEventKafkaProducer stillingskodeEventKafkaProducer,
-            StillingskodeResponseKafkaConsumer stillingskodeResponseKafkaConsumer,
-            FintFilterService odataFilterService,
-            StillingskodeRequestKafkaConsumer stillingskodeRequestKafkaConsumer) {
-        super(cacheService, fintLinker, stillingskodeConfig, stillingskodeEventKafkaProducer, stillingskodeResponseKafkaConsumer, odataFilterService, stillingskodeRequestKafkaConsumer);
+            FintFilterService odataFilterService) {
+        super(cacheService, fintLinker, odataFilterService);
     }
 }

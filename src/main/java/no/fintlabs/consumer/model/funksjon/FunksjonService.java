@@ -24,17 +24,15 @@ public class FunksjonService extends CacheService<FunksjonResource> {
 
     private final FunksjonLinker linker;
 
-    private final FunksjonResponseKafkaConsumer funksjonResponseKafkaConsumer;
 
     public FunksjonService(
             FunksjonConfig consumerConfig,
             CacheManager cacheManager,
             FunksjonEntityKafkaConsumer entityKafkaConsumer,
-            FunksjonLinker linker, FunksjonResponseKafkaConsumer funksjonResponseKafkaConsumer) {
+            FunksjonLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.funksjonResponseKafkaConsumer = funksjonResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class FunksjonService extends CacheService<FunksjonResource> {
 
     private void addResourceToCache(ConsumerRecord<String, FunksjonResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        FunksjonResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            FunksjonResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                funksjonResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

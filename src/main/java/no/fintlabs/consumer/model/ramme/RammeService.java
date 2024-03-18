@@ -24,17 +24,15 @@ public class RammeService extends CacheService<RammeResource> {
 
     private final RammeLinker linker;
 
-    private final RammeResponseKafkaConsumer rammeResponseKafkaConsumer;
 
     public RammeService(
             RammeConfig consumerConfig,
             CacheManager cacheManager,
             RammeEntityKafkaConsumer entityKafkaConsumer,
-            RammeLinker linker, RammeResponseKafkaConsumer rammeResponseKafkaConsumer) {
+            RammeLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.rammeResponseKafkaConsumer = rammeResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class RammeService extends CacheService<RammeResource> {
 
     private void addResourceToCache(ConsumerRecord<String, RammeResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        RammeResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            RammeResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                rammeResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

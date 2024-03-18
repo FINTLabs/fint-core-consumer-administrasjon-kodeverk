@@ -24,17 +24,15 @@ public class UketimetallService extends CacheService<UketimetallResource> {
 
     private final UketimetallLinker linker;
 
-    private final UketimetallResponseKafkaConsumer uketimetallResponseKafkaConsumer;
 
     public UketimetallService(
             UketimetallConfig consumerConfig,
             CacheManager cacheManager,
             UketimetallEntityKafkaConsumer entityKafkaConsumer,
-            UketimetallLinker linker, UketimetallResponseKafkaConsumer uketimetallResponseKafkaConsumer) {
+            UketimetallLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.uketimetallResponseKafkaConsumer = uketimetallResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class UketimetallService extends CacheService<UketimetallResource> {
 
     private void addResourceToCache(ConsumerRecord<String, UketimetallResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        UketimetallResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            UketimetallResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                uketimetallResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

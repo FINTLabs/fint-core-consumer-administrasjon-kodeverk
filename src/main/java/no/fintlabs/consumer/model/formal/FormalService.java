@@ -24,17 +24,15 @@ public class FormalService extends CacheService<FormalResource> {
 
     private final FormalLinker linker;
 
-    private final FormalResponseKafkaConsumer formalResponseKafkaConsumer;
 
     public FormalService(
             FormalConfig consumerConfig,
             CacheManager cacheManager,
             FormalEntityKafkaConsumer entityKafkaConsumer,
-            FormalLinker linker, FormalResponseKafkaConsumer formalResponseKafkaConsumer) {
+            FormalLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.formalResponseKafkaConsumer = formalResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class FormalService extends CacheService<FormalResource> {
 
     private void addResourceToCache(ConsumerRecord<String, FormalResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        FormalResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            FormalResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                formalResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

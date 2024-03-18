@@ -24,17 +24,15 @@ public class AnleggService extends CacheService<AnleggResource> {
 
     private final AnleggLinker linker;
 
-    private final AnleggResponseKafkaConsumer anleggResponseKafkaConsumer;
 
     public AnleggService(
             AnleggConfig consumerConfig,
             CacheManager cacheManager,
             AnleggEntityKafkaConsumer entityKafkaConsumer,
-            AnleggLinker linker, AnleggResponseKafkaConsumer anleggResponseKafkaConsumer) {
+            AnleggLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.anleggResponseKafkaConsumer = anleggResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class AnleggService extends CacheService<AnleggResource> {
 
     private void addResourceToCache(ConsumerRecord<String, AnleggResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        AnleggResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            AnleggResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                anleggResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

@@ -6,7 +6,7 @@ import no.fint.model.resource.administrasjon.kodeverk.KontraktResource;
 import no.fint.relations.FintRelationsMediaType;
 import no.fintlabs.consumer.config.RestEndpoints;
 import no.fintlabs.core.consumer.shared.resource.CacheService;
-import no.fintlabs.core.consumer.shared.resource.WriteableConsumerRestController;
+import no.fintlabs.core.consumer.shared.resource.ConsumerRestController;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping(name = "Kontrakt", value = RestEndpoints.KONTRAKT, produces = {FintRelationsMediaType.APPLICATION_HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
-public class KontraktController extends WriteableConsumerRestController<KontraktResource> {
+public class KontraktController extends ConsumerRestController<KontraktResource> {
 
     public KontraktController(
             CacheService<KontraktResource> cacheService,
             KontraktLinker fintLinker,
-            KontraktConfig kontraktConfig,
-            KontraktEventKafkaProducer kontraktEventKafkaProducer,
-            KontraktResponseKafkaConsumer kontraktResponseKafkaConsumer,
-            FintFilterService odataFilterService,
-            KontraktRequestKafkaConsumer kontraktRequestKafkaConsumer) {
-        super(cacheService, fintLinker, kontraktConfig, kontraktEventKafkaProducer, kontraktResponseKafkaConsumer, odataFilterService, kontraktRequestKafkaConsumer);
+            FintFilterService odataFilterService) {
+        super(cacheService, fintLinker, odataFilterService);
     }
 }

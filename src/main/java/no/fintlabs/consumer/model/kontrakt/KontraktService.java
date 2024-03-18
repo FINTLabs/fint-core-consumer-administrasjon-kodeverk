@@ -24,17 +24,15 @@ public class KontraktService extends CacheService<KontraktResource> {
 
     private final KontraktLinker linker;
 
-    private final KontraktResponseKafkaConsumer kontraktResponseKafkaConsumer;
 
     public KontraktService(
             KontraktConfig consumerConfig,
             CacheManager cacheManager,
             KontraktEntityKafkaConsumer entityKafkaConsumer,
-            KontraktLinker linker, KontraktResponseKafkaConsumer kontraktResponseKafkaConsumer) {
+            KontraktLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.kontraktResponseKafkaConsumer = kontraktResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class KontraktService extends CacheService<KontraktResource> {
 
     private void addResourceToCache(ConsumerRecord<String, KontraktResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        KontraktResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            KontraktResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                kontraktResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

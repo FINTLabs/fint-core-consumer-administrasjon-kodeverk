@@ -6,7 +6,7 @@ import no.fint.model.resource.administrasjon.kodeverk.FravarsgrunnResource;
 import no.fint.relations.FintRelationsMediaType;
 import no.fintlabs.consumer.config.RestEndpoints;
 import no.fintlabs.core.consumer.shared.resource.CacheService;
-import no.fintlabs.core.consumer.shared.resource.WriteableConsumerRestController;
+import no.fintlabs.core.consumer.shared.resource.ConsumerRestController;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping(name = "Fravarsgrunn", value = RestEndpoints.FRAVARSGRUNN, produces = {FintRelationsMediaType.APPLICATION_HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
-public class FravarsgrunnController extends WriteableConsumerRestController<FravarsgrunnResource> {
+public class FravarsgrunnController extends ConsumerRestController<FravarsgrunnResource> {
 
     public FravarsgrunnController(
             CacheService<FravarsgrunnResource> cacheService,
             FravarsgrunnLinker fintLinker,
-            FravarsgrunnConfig fravarsgrunnConfig,
-            FravarsgrunnEventKafkaProducer fravarsgrunnEventKafkaProducer,
-            FravarsgrunnResponseKafkaConsumer fravarsgrunnResponseKafkaConsumer,
-            FintFilterService odataFilterService,
-            FravarsgrunnRequestKafkaConsumer fravarsgrunnRequestKafkaConsumer) {
-        super(cacheService, fintLinker, fravarsgrunnConfig, fravarsgrunnEventKafkaProducer, fravarsgrunnResponseKafkaConsumer, odataFilterService, fravarsgrunnRequestKafkaConsumer);
+            FintFilterService odataFilterService) {
+        super(cacheService, fintLinker, odataFilterService);
     }
 }

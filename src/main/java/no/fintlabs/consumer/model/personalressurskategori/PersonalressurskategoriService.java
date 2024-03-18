@@ -24,17 +24,15 @@ public class PersonalressurskategoriService extends CacheService<Personalressurs
 
     private final PersonalressurskategoriLinker linker;
 
-    private final PersonalressurskategoriResponseKafkaConsumer personalressurskategoriResponseKafkaConsumer;
 
     public PersonalressurskategoriService(
             PersonalressurskategoriConfig consumerConfig,
             CacheManager cacheManager,
             PersonalressurskategoriEntityKafkaConsumer entityKafkaConsumer,
-            PersonalressurskategoriLinker linker, PersonalressurskategoriResponseKafkaConsumer personalressurskategoriResponseKafkaConsumer) {
+            PersonalressurskategoriLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.personalressurskategoriResponseKafkaConsumer = personalressurskategoriResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class PersonalressurskategoriService extends CacheService<Personalressurs
 
     private void addResourceToCache(ConsumerRecord<String, PersonalressurskategoriResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        PersonalressurskategoriResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            PersonalressurskategoriResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                personalressurskategoriResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

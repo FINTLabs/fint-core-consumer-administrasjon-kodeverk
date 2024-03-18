@@ -24,17 +24,15 @@ public class ArtService extends CacheService<ArtResource> {
 
     private final ArtLinker linker;
 
-    private final ArtResponseKafkaConsumer artResponseKafkaConsumer;
 
     public ArtService(
             ArtConfig consumerConfig,
             CacheManager cacheManager,
             ArtEntityKafkaConsumer entityKafkaConsumer,
-            ArtLinker linker, ArtResponseKafkaConsumer artResponseKafkaConsumer) {
+            ArtLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.artResponseKafkaConsumer = artResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class ArtService extends CacheService<ArtResource> {
 
     private void addResourceToCache(ConsumerRecord<String, ArtResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        ArtResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            ArtResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                artResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

@@ -24,17 +24,15 @@ public class FravarstypeService extends CacheService<FravarstypeResource> {
 
     private final FravarstypeLinker linker;
 
-    private final FravarstypeResponseKafkaConsumer fravarstypeResponseKafkaConsumer;
 
     public FravarstypeService(
             FravarstypeConfig consumerConfig,
             CacheManager cacheManager,
             FravarstypeEntityKafkaConsumer entityKafkaConsumer,
-            FravarstypeLinker linker, FravarstypeResponseKafkaConsumer fravarstypeResponseKafkaConsumer) {
+            FravarstypeLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.fravarstypeResponseKafkaConsumer = fravarstypeResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class FravarstypeService extends CacheService<FravarstypeResource> {
 
     private void addResourceToCache(ConsumerRecord<String, FravarstypeResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        FravarstypeResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            FravarstypeResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                fravarstypeResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

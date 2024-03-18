@@ -6,7 +6,7 @@ import no.fint.model.resource.administrasjon.kodeverk.PersonalressurskategoriRes
 import no.fint.relations.FintRelationsMediaType;
 import no.fintlabs.consumer.config.RestEndpoints;
 import no.fintlabs.core.consumer.shared.resource.CacheService;
-import no.fintlabs.core.consumer.shared.resource.WriteableConsumerRestController;
+import no.fintlabs.core.consumer.shared.resource.ConsumerRestController;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping(name = "Personalressurskategori", value = RestEndpoints.PERSONALRESSURSKATEGORI, produces = {FintRelationsMediaType.APPLICATION_HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
-public class PersonalressurskategoriController extends WriteableConsumerRestController<PersonalressurskategoriResource> {
+public class PersonalressurskategoriController extends ConsumerRestController<PersonalressurskategoriResource> {
 
     public PersonalressurskategoriController(
             CacheService<PersonalressurskategoriResource> cacheService,
             PersonalressurskategoriLinker fintLinker,
-            PersonalressurskategoriConfig personalressurskategoriConfig,
-            PersonalressurskategoriEventKafkaProducer personalressurskategoriEventKafkaProducer,
-            PersonalressurskategoriResponseKafkaConsumer personalressurskategoriResponseKafkaConsumer,
-            FintFilterService odataFilterService,
-            PersonalressurskategoriRequestKafkaConsumer personalressurskategoriRequestKafkaConsumer) {
-        super(cacheService, fintLinker, personalressurskategoriConfig, personalressurskategoriEventKafkaProducer, personalressurskategoriResponseKafkaConsumer, odataFilterService, personalressurskategoriRequestKafkaConsumer);
+            FintFilterService odataFilterService) {
+        super(cacheService, fintLinker, odataFilterService);
     }
 }

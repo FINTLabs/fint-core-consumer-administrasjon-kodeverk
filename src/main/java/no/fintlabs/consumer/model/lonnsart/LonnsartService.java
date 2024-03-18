@@ -24,17 +24,15 @@ public class LonnsartService extends CacheService<LonnsartResource> {
 
     private final LonnsartLinker linker;
 
-    private final LonnsartResponseKafkaConsumer lonnsartResponseKafkaConsumer;
 
     public LonnsartService(
             LonnsartConfig consumerConfig,
             CacheManager cacheManager,
             LonnsartEntityKafkaConsumer entityKafkaConsumer,
-            LonnsartLinker linker, LonnsartResponseKafkaConsumer lonnsartResponseKafkaConsumer) {
+            LonnsartLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.lonnsartResponseKafkaConsumer = lonnsartResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class LonnsartService extends CacheService<LonnsartResource> {
 
     private void addResourceToCache(ConsumerRecord<String, LonnsartResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        LonnsartResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            LonnsartResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                lonnsartResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

@@ -24,17 +24,15 @@ public class StillingskodeService extends CacheService<StillingskodeResource> {
 
     private final StillingskodeLinker linker;
 
-    private final StillingskodeResponseKafkaConsumer stillingskodeResponseKafkaConsumer;
 
     public StillingskodeService(
             StillingskodeConfig consumerConfig,
             CacheManager cacheManager,
             StillingskodeEntityKafkaConsumer entityKafkaConsumer,
-            StillingskodeLinker linker, StillingskodeResponseKafkaConsumer stillingskodeResponseKafkaConsumer) {
+            StillingskodeLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.stillingskodeResponseKafkaConsumer = stillingskodeResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class StillingskodeService extends CacheService<StillingskodeResource> {
 
     private void addResourceToCache(ConsumerRecord<String, StillingskodeResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        StillingskodeResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            StillingskodeResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                stillingskodeResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

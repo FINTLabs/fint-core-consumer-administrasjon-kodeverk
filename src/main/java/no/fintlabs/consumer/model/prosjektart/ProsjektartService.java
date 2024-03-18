@@ -24,17 +24,15 @@ public class ProsjektartService extends CacheService<ProsjektartResource> {
 
     private final ProsjektartLinker linker;
 
-    private final ProsjektartResponseKafkaConsumer prosjektartResponseKafkaConsumer;
 
     public ProsjektartService(
             ProsjektartConfig consumerConfig,
             CacheManager cacheManager,
             ProsjektartEntityKafkaConsumer entityKafkaConsumer,
-            ProsjektartLinker linker, ProsjektartResponseKafkaConsumer prosjektartResponseKafkaConsumer) {
+            ProsjektartLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.prosjektartResponseKafkaConsumer = prosjektartResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class ProsjektartService extends CacheService<ProsjektartResource> {
 
     private void addResourceToCache(ConsumerRecord<String, ProsjektartResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        ProsjektartResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            ProsjektartResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                prosjektartResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

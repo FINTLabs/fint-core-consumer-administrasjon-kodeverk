@@ -24,17 +24,15 @@ public class LopenummerService extends CacheService<LopenummerResource> {
 
     private final LopenummerLinker linker;
 
-    private final LopenummerResponseKafkaConsumer lopenummerResponseKafkaConsumer;
 
     public LopenummerService(
             LopenummerConfig consumerConfig,
             CacheManager cacheManager,
             LopenummerEntityKafkaConsumer entityKafkaConsumer,
-            LopenummerLinker linker, LopenummerResponseKafkaConsumer lopenummerResponseKafkaConsumer) {
+            LopenummerLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.lopenummerResponseKafkaConsumer = lopenummerResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class LopenummerService extends CacheService<LopenummerResource> {
 
     private void addResourceToCache(ConsumerRecord<String, LopenummerResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        LopenummerResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            LopenummerResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                lopenummerResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 

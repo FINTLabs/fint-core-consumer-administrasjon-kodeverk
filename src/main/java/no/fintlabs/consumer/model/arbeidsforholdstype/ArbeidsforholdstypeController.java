@@ -6,7 +6,7 @@ import no.fint.model.resource.administrasjon.kodeverk.ArbeidsforholdstypeResourc
 import no.fint.relations.FintRelationsMediaType;
 import no.fintlabs.consumer.config.RestEndpoints;
 import no.fintlabs.core.consumer.shared.resource.CacheService;
-import no.fintlabs.core.consumer.shared.resource.WriteableConsumerRestController;
+import no.fintlabs.core.consumer.shared.resource.ConsumerRestController;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping(name = "Arbeidsforholdstype", value = RestEndpoints.ARBEIDSFORHOLDSTYPE, produces = {FintRelationsMediaType.APPLICATION_HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
-public class ArbeidsforholdstypeController extends WriteableConsumerRestController<ArbeidsforholdstypeResource> {
+public class ArbeidsforholdstypeController extends ConsumerRestController<ArbeidsforholdstypeResource> {
 
     public ArbeidsforholdstypeController(
             CacheService<ArbeidsforholdstypeResource> cacheService,
             ArbeidsforholdstypeLinker fintLinker,
-            ArbeidsforholdstypeConfig arbeidsforholdstypeConfig,
-            ArbeidsforholdstypeEventKafkaProducer arbeidsforholdstypeEventKafkaProducer,
-            ArbeidsforholdstypeResponseKafkaConsumer arbeidsforholdstypeResponseKafkaConsumer,
-            FintFilterService odataFilterService,
-            ArbeidsforholdstypeRequestKafkaConsumer arbeidsforholdstypeRequestKafkaConsumer) {
-        super(cacheService, fintLinker, arbeidsforholdstypeConfig, arbeidsforholdstypeEventKafkaProducer, arbeidsforholdstypeResponseKafkaConsumer, odataFilterService, arbeidsforholdstypeRequestKafkaConsumer);
+            FintFilterService odataFilterService) {
+        super(cacheService, fintLinker, odataFilterService);
     }
 }

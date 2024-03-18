@@ -24,17 +24,15 @@ public class DiverseService extends CacheService<DiverseResource> {
 
     private final DiverseLinker linker;
 
-    private final DiverseResponseKafkaConsumer diverseResponseKafkaConsumer;
 
     public DiverseService(
             DiverseConfig consumerConfig,
             CacheManager cacheManager,
             DiverseEntityKafkaConsumer entityKafkaConsumer,
-            DiverseLinker linker, DiverseResponseKafkaConsumer diverseResponseKafkaConsumer) {
+            DiverseLinker linker) {
         super(consumerConfig, cacheManager, entityKafkaConsumer);
         this.entityKafkaConsumer = entityKafkaConsumer;
         this.linker = linker;
-        this.diverseResponseKafkaConsumer = diverseResponseKafkaConsumer;
     }
 
     @Override
@@ -50,17 +48,12 @@ public class DiverseService extends CacheService<DiverseResource> {
 
     private void addResourceToCache(ConsumerRecord<String, DiverseResource> consumerRecord) {
         this.eventLogger.logDataRecieved();
-        DiverseResource resource = consumerRecord.value();
-        if (resource == null) {
+        if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
         } else {
+            DiverseResource resource = consumerRecord.value();
             linker.mapLinks(resource);
-            this.getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
-            if (consumerRecord.headers().lastHeader("event-corr-id") != null){
-                String corrId = new String(consumerRecord.headers().lastHeader("event-corr-id").value(), StandardCharsets.UTF_8);
-                log.debug("Adding corrId to EntityResponseCache: {}", corrId);
-                diverseResponseKafkaConsumer.getEntityCache().add(corrId, resource);
-            }
+            getCache().put(consumerRecord.key(), resource, linker.hashCodes(resource));
         }
     }
 
