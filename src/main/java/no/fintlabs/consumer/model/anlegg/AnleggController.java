@@ -1,8 +1,10 @@
 package no.fintlabs.consumer.model.anlegg;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.antlr.FintFilterService;
 import no.fint.model.resource.administrasjon.kodeverk.AnleggResource;
+import no.fint.model.resource.administrasjon.organisasjon.ArbeidslokasjonResource;
 import no.fint.relations.FintRelationsMediaType;
 import no.fintlabs.consumer.config.RestEndpoints;
 import no.fintlabs.core.consumer.shared.resource.CacheService;
@@ -23,5 +25,10 @@ public class AnleggController extends ConsumerRestController<AnleggResource> {
             AnleggLinker fintLinker,
             FintFilterService odataFilterService) {
         super(cacheService, fintLinker, odataFilterService);
+    }
+
+    @PostConstruct
+    private void registerIdentificators() {
+        super.registerIdenficatorHandler("systemId", AnleggResource::getSystemId);
     }
 }

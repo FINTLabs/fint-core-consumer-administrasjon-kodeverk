@@ -1,7 +1,9 @@
 package no.fintlabs.consumer.model.fravarstype;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.antlr.FintFilterService;
+import no.fint.model.resource.administrasjon.kodeverk.AnleggResource;
 import no.fint.model.resource.administrasjon.kodeverk.FravarstypeResource;
 import no.fint.relations.FintRelationsMediaType;
 import no.fintlabs.consumer.config.RestEndpoints;
@@ -23,5 +25,10 @@ public class FravarstypeController extends ConsumerRestController<FravarstypeRes
             FravarstypeLinker fintLinker,
             FintFilterService odataFilterService) {
         super(cacheService, fintLinker, odataFilterService);
+    }
+
+    @PostConstruct
+    private void registerIdentificators() {
+        super.registerIdenficatorHandler("systemId", FravarstypeResource::getSystemId);
     }
 }
