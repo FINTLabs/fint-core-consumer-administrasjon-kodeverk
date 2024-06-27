@@ -29,6 +29,6 @@ public class RammeController extends ConsumerRestController<RammeResource> {
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", RammeResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", RammeResource::getSystemId);
     }
 }

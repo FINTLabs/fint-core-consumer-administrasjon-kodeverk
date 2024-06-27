@@ -29,6 +29,6 @@ public class ArtController extends ConsumerRestController<ArtResource> {
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", ArtResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", ArtResource::getSystemId);
     }
 }

@@ -29,6 +29,6 @@ public class StillingskodeController extends ConsumerRestController<Stillingskod
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", StillingskodeResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", StillingskodeResource::getSystemId);
     }
 }

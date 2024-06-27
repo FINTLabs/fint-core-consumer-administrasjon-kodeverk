@@ -29,6 +29,6 @@ public class LonnsartController extends ConsumerRestController<LonnsartResource>
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", LonnsartResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", LonnsartResource::getSystemId);
     }
 }

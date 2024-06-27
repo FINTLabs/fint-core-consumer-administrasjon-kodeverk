@@ -29,6 +29,6 @@ public class AnsvarController extends ConsumerRestController<AnsvarResource> {
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", AnsvarResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", AnsvarResource::getSystemId);
     }
 }

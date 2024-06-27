@@ -29,6 +29,6 @@ public class FormalController extends ConsumerRestController<FormalResource> {
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", FormalResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", FormalResource::getSystemId);
     }
 }

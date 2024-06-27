@@ -29,6 +29,6 @@ public class AktivitetController extends ConsumerRestController<AktivitetResourc
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", AktivitetResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", AktivitetResource::getSystemId);
     }
 }

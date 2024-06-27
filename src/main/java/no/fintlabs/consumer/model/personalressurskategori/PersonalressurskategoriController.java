@@ -29,6 +29,6 @@ public class PersonalressurskategoriController extends ConsumerRestController<Pe
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", PersonalressurskategoriResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", PersonalressurskategoriResource::getSystemId);
     }
 }

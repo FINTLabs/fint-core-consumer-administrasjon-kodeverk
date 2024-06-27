@@ -29,6 +29,6 @@ public class LopenummerController extends ConsumerRestController<LopenummerResou
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", LopenummerResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", LopenummerResource::getSystemId);
     }
 }

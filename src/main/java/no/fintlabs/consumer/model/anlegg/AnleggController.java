@@ -29,6 +29,6 @@ public class AnleggController extends ConsumerRestController<AnleggResource> {
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", AnleggResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", AnleggResource::getSystemId);
     }
 }

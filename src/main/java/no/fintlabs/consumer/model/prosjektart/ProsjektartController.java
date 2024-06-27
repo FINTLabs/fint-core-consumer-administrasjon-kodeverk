@@ -29,6 +29,6 @@ public class ProsjektartController extends ConsumerRestController<ProsjektartRes
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", ProsjektartResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", ProsjektartResource::getSystemId);
     }
 }

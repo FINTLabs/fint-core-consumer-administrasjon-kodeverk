@@ -29,6 +29,6 @@ public class FravarsgrunnController extends ConsumerRestController<FravarsgrunnR
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", FravarsgrunnResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", FravarsgrunnResource::getSystemId);
     }
 }

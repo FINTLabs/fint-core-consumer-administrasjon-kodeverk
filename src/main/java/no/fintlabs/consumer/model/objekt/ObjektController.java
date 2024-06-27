@@ -29,6 +29,6 @@ public class ObjektController extends ConsumerRestController<ObjektResource> {
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", ObjektResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", ObjektResource::getSystemId);
     }
 }

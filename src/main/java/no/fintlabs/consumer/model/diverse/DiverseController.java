@@ -29,6 +29,6 @@ public class DiverseController extends ConsumerRestController<DiverseResource> {
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", DiverseResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", DiverseResource::getSystemId);
     }
 }

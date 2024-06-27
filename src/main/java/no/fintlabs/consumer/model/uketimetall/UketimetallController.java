@@ -29,6 +29,6 @@ public class UketimetallController extends ConsumerRestController<UketimetallRes
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", UketimetallResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", UketimetallResource::getSystemId);
     }
 }

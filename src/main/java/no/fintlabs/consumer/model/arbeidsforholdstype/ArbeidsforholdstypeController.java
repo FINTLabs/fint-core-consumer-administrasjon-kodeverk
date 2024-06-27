@@ -29,6 +29,6 @@ public class ArbeidsforholdstypeController extends ConsumerRestController<Arbeid
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", ArbeidsforholdstypeResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", ArbeidsforholdstypeResource::getSystemId);
     }
 }

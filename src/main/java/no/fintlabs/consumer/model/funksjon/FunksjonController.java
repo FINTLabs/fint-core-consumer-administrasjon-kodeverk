@@ -29,6 +29,6 @@ public class FunksjonController extends ConsumerRestController<FunksjonResource>
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", FunksjonResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", FunksjonResource::getSystemId);
     }
 }

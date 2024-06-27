@@ -29,6 +29,6 @@ public class KontraktController extends ConsumerRestController<KontraktResource>
 
     @PostConstruct
     private void registerIdentificators() {
-        super.registerIdenficatorHandler("systemId", KontraktResource::getSystemId);
+        super.registerIdenficatorHandler("systemid", KontraktResource::getSystemId);
     }
 }
