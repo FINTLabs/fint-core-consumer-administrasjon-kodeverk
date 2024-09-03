@@ -13,7 +13,6 @@ import no.fintlabs.core.consumer.shared.resource.kafka.EntityKafkaConsumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
@@ -42,11 +41,11 @@ public class FormalService extends CacheService<FormalResource> {
 
     @PostConstruct
     private void registerKafkaListener() {
-        long retention = entityKafkaConsumer.registerListener(FormalResource.class, this::addResourceToCache);
-        getCache().setRetentionPeriodInMs(retention);
+        entityKafkaConsumer.registerListener(FormalResource.class, this::addResourceToCache);
     }
 
     private void addResourceToCache(ConsumerRecord<String, FormalResource> consumerRecord) {
+        updateRetensionTime(consumerRecord.headers().lastHeader("topic-retension-time"));
         this.eventLogger.logDataRecieved();
         if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());

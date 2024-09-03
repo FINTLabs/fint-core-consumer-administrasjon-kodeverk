@@ -42,11 +42,11 @@ public class UketimetallService extends CacheService<UketimetallResource> {
 
     @PostConstruct
     private void registerKafkaListener() {
-        long retention = entityKafkaConsumer.registerListener(UketimetallResource.class, this::addResourceToCache);
-        getCache().setRetentionPeriodInMs(retention);
+        entityKafkaConsumer.registerListener(UketimetallResource.class, this::addResourceToCache);
     }
 
     private void addResourceToCache(ConsumerRecord<String, UketimetallResource> consumerRecord) {
+        updateRetensionTime(consumerRecord.headers().lastHeader("topic-retension-time"));
         this.eventLogger.logDataRecieved();
         if (consumerRecord.value() == null) {
             getCache().remove(consumerRecord.key());
